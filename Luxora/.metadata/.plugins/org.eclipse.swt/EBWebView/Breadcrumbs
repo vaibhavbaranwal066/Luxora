@@ -1,0 +1,46 @@
+1:02:22 Tab26 RenderProcessGone
+1:02:22 Microsoft.UnloadController.ClearUnloadState
+1:02:22 Microsoft.Shutdown.TabStripModel.RunUnloadListenerBeforeClosing_false
+1:02:22 Microsoft.Shutdown.TabStripModel.InternalCloseTabsImpl_ClosedAll
+1:02:22 Microsoft.Shutdown.TabStripModel.SendDetachWebContentsNotifications
+1:02:22 Microsoft.UnloadController.ClearUnloadState
+1:02:22 Browser26 Close Tab26 at 0
+1:02:22 Tab26 WebContentsDestroyed
+1:02:22 Microsoft.UnloadController.TabStripEmpty
+1:02:22 Microsoft.UnloadController.IsUnclosableApp_IsNotWebApp
+1:02:22 Microsoft.UnloadController.HasCompletedUnloadProcessing_True
+1:02:22 Microsoft.Shutdown.OnWindowClosing
+1:02:22 Microsoft.UnloadController.IsUnclosableApp_IsNotWebApp
+1:02:22 Microsoft.UnloadController.HasCompletedUnloadProcessing_True
+1:02:22 Microsoft.Shutdown.OnWindowClosingPostClearBrowsingData_NoBrowsingDataCleared
+1:02:22 Widget Closed: BrowserFrame
+1:02:22 Microsoft.UnloadController.HasCompletedUnloadProcessing_True
+1:02:22 Microsoft.Shutdown.OnWindowClosing
+1:02:22 Microsoft.Shutdown.OnWindowClosing_DeleteScheduled
+1:02:22 Microsoft.Browser_Removed
+1:41:31 Microsoft.NewBrowser_Popup
+1:41:31 Microsoft.BrowserList.AddBrowser
+1:41:31 Browser27 Insert active Tab27 at 0
+1:41:31 Tab27 StartNav179 #auto_toplevel
+1:41:31 Tab27 StartNav180 #typed
+1:41:32 Tab27 FinishNav179
+1:41:32 Tab27 PageLoad
+1:41:32 Tab27 FinishNav180
+1:41:32 Tab27 PageLoad
+1:41:39 Tab27 StartNav181 #typed
+1:41:39 Tab27 FinishNav181
+1:41:39 Tab27 PageLoad
+1:42:31 Microsoft.UnloadController.IsUnclosableApp_IsNotWebApp
+0:00:00 Startup
+0:00:00 Microsoft.DeleteProfileHelper.CleanUpEphemeralProfiles
+0:00:00 Microsoft.DeleteProfileHelper.CleanUpDeletedProfiles
+0:00:00 Microsoft.NewBrowser_Popup
+0:00:00 Microsoft.BrowserList.AddBrowser
+0:00:00 Browser1 Insert active Tab1 at 0
+0:00:00 Tab1 StartNav1 #auto_toplevel
+0:00:00 Tab1 StartNav2 #typed
+0:00:00 Tab1 FinishNav1
+0:00:00 Tab1 PageLoad
+0:00:00 Tab1 FinishNav2
+0:00:05 Tab1 PageLoad
+24:06:01 Microsoft.UnloadController.IsUnclosableApp_IsNotWebApp

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Order Confirmation – Luxora</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="logo">Luxora</a>
+    <a href="orders.html">My Orders</a>
+    <a href="cart.html">🛒 Cart</a>
+  </nav>
+
+  <main class="container">
+    <h1>Thank You!</h1>
+    <p>Your order has been placed successfully.</p>
+    <h3>Order Summary</h3>
+    <ul id="oc-items"></ul>
+    <p><strong>Total Paid:</strong> ₹<span id="oc-total">0</span></p>
+    <button onclick="location.href='index.html'">Continue Shopping</button>
+  </main>
+
+  <script>
+    // Reads summary stored by checkout flow (sessionStorage preferred to avoid stale data)
+    const last = JSON.parse(sessionStorage.getItem('lastOrder') || 'null') 
+              || JSON.parse(localStorage.getItem('lastOrder') || 'null');
+    const ul = document.getElementById('oc-items');
+    const totalEl = document.getElementById('oc-total');
+
+    if(!last){
+      ul.innerHTML = '<li>No order data found.</li>';
+      totalEl.textContent = '0';
+    }else{
+      ul.innerHTML = (last.items||[]).map(i=>`<li>${i.name} x${i.quantity}${i.address?` — ${i.address}`:''}</li>`).join('');
+      totalEl.textContent = last.total || 0;
+      // Clean up volatile session data
+      sessionStorage.removeItem('lastOrder');
+      localStorage.removeItem('lastOrder');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Admin Dashboard – Luxora</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <style>
+    /* Inline admin styles (copy to style.css if you want) */
+    :root { --bg:#f6f8fb; --card:#fff; --muted:#6b7280; --accent:#0f62fe; --danger:#c62828; }
+    body{margin:0;font-family:Inter,system-ui,Arial;background:var(--bg);color:#0f1724}
+    .layout{display:flex;min-height:100vh}
+    .sidebar{width:220px;background:#0b1320;color:#fff;padding:20px;box-sizing:border-box;position:fixed;left:0;top:0;bottom:0}
+    .sidebar h2{margin:0 0 12px 0;font-size:18px}
+    .sidebar a{display:block;color:rgba(255,255,255,0.92);padding:8px 10px;margin:6px 0;border-radius:6px;text-decoration:none}
+    .sidebar a:hover{background:#14243a}
+    .main{margin-left:240px;padding:20px;flex:1}
+    .card{background:var(--card);border-radius:10px;padding:14px;margin-bottom:16px;box-shadow:0 2px 8px rgba(12,18,30,0.04)}
+    .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    table{width:100%;border-collapse:collapse;margin-top:12px}
+    th,td{padding:10px;border-bottom:1px solid #eef2f6;text-align:left;font-size:14px}
+    th{background:#f8fafc;font-weight:600}
+    input,select,textarea{padding:8px;border:1px solid #e6eef6;border-radius:6px;width:100%;box-sizing:border-box}
+    button{background:var(--accent);color:#fff;padding:8px 10px;border:none;border-radius:6px;cursor:pointer}
+    .btn-ghost{background:#eef2ff;color:#0f62fe;border:1px solid #dbeafe}
+    .btn-danger{background:var(--danger)}
+    .muted{color:var(--muted)}
+    .controls{display:flex;gap:8px;flex-wrap:wrap}
+    .small{padding:6px 8px;font-size:13px}
+    .actions button{margin-right:6px}
+    .searchbar{display:flex;gap:8px;align-items:center}
+    .searchbar input{flex:1}
+    .pagination{display:flex;gap:6px;align-items:center;margin-top:8px}
+    .badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#eef2ff;color:#0f62fe;font-weight:600}
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>Luxora Admin</h2>
+      <nav>
+        <a href="#" data-section="dashboard">Dashboard</a>
+        <a href="#" data-section="products">Products</a>
+        <a href="#" data-section="orders">Orders</a>
+        <a href="#" data-section="users">Users</a>
+        <a href="#" data-section="analytics">Analytics</a>
+        <a href="#" data-section="tools">Tools</a>
+        <a href="index.html" style="margin-top:14px;color:#ffecb3">← Back to Store</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <!-- DASHBOARD -->
+      <section id="dashboard" class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <h1 style="margin:0">Admin Dashboard</h1>
+            <p class="muted" id="admin-welcome">Overview & quick actions</p>
+          </div>
+          <div style="text-align:right">
+            <div class="badge" id="a-users">0 Users</div>
+            <div style="height:6px"></div>
+            <div class="badge" id="a-orders">0 Orders</div>
+            <div style="height:6px"></div>
+            <div class="badge" id="a-products">0 Products</div>
+          </div>
+        </div>
+
+        <div class="grid3" style="margin-top:12px">
+          <div class="card">
+            <h3 style="margin:0">Quick Add Product</h3>
+            <form id="quick-add-product" style="margin-top:8px">
+              <input id="q-name" placeholder="Product name" required>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <input id="q-price" placeholder="Price" type="number" min="0">
+                <input id="q-offer" placeholder="Offer (%)" type="number" min="0" max="100">
+              </div>
+              <input id="q-img" placeholder="Image URL" style="margin-top:8px">
+              <div style="margin-top:8px;display:flex;gap:8px">
+                <button type="submit" class="small">Add</button>
+                <button type="button" id="go-products" class="btn-ghost small">Manage products</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="card">
+            <h3 style="margin:0">Recent Orders</h3>
+            <div id="recent-orders" style="margin-top:8px"></div>
+            <div style="margin-top:8px">
+              <button id="go-orders" class="btn-ghost small">View all orders</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3 style="margin:0">Notifications</h3>
+            <div id="recent-notifs" style="margin-top:8px" class="muted">—</div>
+            <div style="margin-top:8px"><button id="notify-test" class="small">Send test notification</button></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRODUCTS -->
+      <section id="products" class="card hidden">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h2 style="margin:0">Products</h2>
+          <div class="controls">
+            <div class="searchbar">
+              <input id="search-products" placeholder="Search products...">
+              <button id="clear-search-products" class="btn-ghost small">Clear</button>
+            </div>
+            <button id="reload-products" class="small btn-ghost">Reload</button>
+          </div>
+        </div>
+
+        <form id="product-form" style="margin-top:12px">
+          <input type="hidden" id="edit-id">
+          <div class="form-row" style="display:flex;gap:8px">
+            <input id="prod-name" placeholder="Name">
+            <input id="prod-price" placeholder="Price" type="number" min="0">
+          </div>
+          <div class="form-row" style="display:flex;gap:8px;margin-top:8px">
+            <input id="prod-offer" placeholder="Offer (%)" type="number" min="0" max="100">
+            <input id="prod-category" placeholder="Category">
+          </div>
+          <div style="margin-top:8px">
+            <input id="prod-img" placeholder="Image URL">
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button type="submit" class="small">Save</button>
+            <button type="button" id="prod-clear" class="small btn-ghost">Clear</button>
+          </div>
+        </form>
+
+        <div style="overflow:auto;margin-top:12px">
+          <table id="products-table">
+            <thead><tr><th>ID</th><th>Name</th><th>Price</th><th>Offer</th><th>Category</th><th>Actions</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="pagination" id="products-pagination"></div>
+      </section>
+
+      <!-- ORDERS -->
+      <section id="orders" class="card hidden">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h2 style="margin:0">Orders</h2>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="search-orders" placeholder="Search by order id / user / product...">
+            <select id="filter-order-status"><option value="">All statuses</option><option>Pending</option><option>Shipped</option><option>Delivered</option><option>Cancelled</option></select>
+            <button id="reload-orders" class="small btn-ghost">Reload</button>
+          </div>
+        </div>
+
+        <div style="overflow:auto;margin-top:12px">
+          <table id="orders-table">
+            <thead><tr><th>#</th><th>Order ID</th><th>User</th><th>Date</th><th>Total</th><th>Status</th><th>Items</th><th>Action</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="pagination" id="orders-pagination"></div>
+      </section>
+
+      <!-- USERS -->
+      <section id="users" class="card hidden">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h2 style="margin:0">Users</h2>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="search-users" placeholder="Search users...">
+            <button id="reload-users" class="small btn-ghost">Reload</button>
+          </div>
+        </div>
+
+        <div style="overflow:auto;margin-top:12px">
+          <table id="users-table">
+            <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="pagination" id="users-pagination"></div>
+      </section>
+
+      <!-- ANALYTICS -->
+      <section id="analytics" class="card hidden">
+        <h2>Analytics</h2>
+        <div style="display:flex;gap:12px;align-items:center">
+          <select id="analytics-range">
+            <option value="30">Last 30 days</option>
+            <option value="7">Last 7 days</option>
+            <option value="365">Last 365 days</option>
+          </select>
+          <button id="reload-analytics" class="small btn-ghost">Refresh</button>
+        </div>
+        <canvas id="salesChart" style="margin-top:12px;max-height:320px"></canvas>
+        <h3 style="margin-top:12px">Top Products</h3>
+        <div id="top-products" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:8px"></div>
+      </section>
+
+      <!-- TOOLS -->
+      <section id="tools" class="card hidden">
+        <h2>Tools</h2>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+          <button id="export-data">Export JSON</button>
+          <input id="import-file" type="file" accept="application/json">
+          <button id="import-data" class="small btn-ghost">Import</button>
+          <button id="wipe-data" class="small btn-danger">Wipe Data</button>
+        </div>
+
+        <div style="margin-top:12px">
+          <h4>Notifications</h4>
+          <div id="admin-notifs" style="max-height:180px;overflow:auto;border:1px solid #eef2f6;padding:8px;border-radius:8px" class="muted"></div>
+          <div style="margin-top:8px">
+            <button id="clear-notifs" class="btn-ghost small">Clear</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- load main.js (if available) -->
+  <script src="main.js"></script>
+
+  <script>
+  /* ---------------------- Utilities ---------------------- */
+  const $ = (sel, ctx=document) => ctx.querySelector(sel);
+  const $$ = (sel, ctx=document) => Array.from(ctx.querySelectorAll(sel));
+  const safeParse = s => { try { return JSON.parse(s); } catch(e){ return null } };
+  const uid = () => 'id_'+Math.random().toString(36).slice(2,9);
+  function escapeHtml(s){ if(s===null||s===undefined) return ''; return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  /* ---------------------- Auth protection ---------------------- */
+  function requireAdmin() {
+    const cu = safeParse(localStorage.getItem('currentUser')) || safeParse(localStorage.getItem('activeUser'));
+    if (cu && cu.isAdmin) return true;
+    // fallback: basic prompt (not secure, for dev only)
+    const pass = localStorage.getItem('adminPass') || 'admin123';
+    const ok = prompt('Enter admin password (dev):');
+    if (ok === pass) {
+      // set ephemeral admin user
+      const admin = { username:'admin', email:'admin@local', isAdmin:true };
+      localStorage.setItem('currentUser', JSON.stringify(admin));
+      return true;
+    }
+    alert('Admin access required.');
+    window.location.href = 'index.html';
+    return false;
+  }
+
+  if(!requireAdmin()) throw new Error('Admin access denied');
+
+  /* ---------------------- Storage adapters ---------------------- */
+
+  function getProducts(){
+    const fromLS = safeParse(localStorage.getItem('products'));
+    if(Array.isArray(fromLS)) return fromLS;
+    if(Array.isArray(window.products)) return window.products.slice();
+    // try to build from main.js products var if named differently
+    if(Array.isArray(window.__products)) return window.__products.slice();
+    return [];
+  }
+  function saveProducts(arr){
+    localStorage.setItem('products', JSON.stringify(arr));
+    if(Array.isArray(window.products)) window.products = arr;
+  }
+
+  function loadOrdersRaw(){
+    const raw = safeParse(localStorage.getItem('orders'));
+    if(!raw) return [];
+    if(Array.isArray(raw)) return raw;
+    if(typeof raw === 'object'){
+      const out = [];
+      Object.keys(raw).forEach(email => {
+        const list = Array.isArray(raw[email]) ? raw[email] : [];
+        list.forEach(o => out.push({ ...o, userEmail: email }));
+      });
+      return out;
+    }
+    return [];
+  }
+  function saveOrdersNormalized(arr){
+    const raw = safeParse(localStorage.getItem('orders'));
+    if(!raw || Array.isArray(raw)){
+      localStorage.setItem('orders', JSON.stringify(arr));
+      return;
+    }
+    // raw is keyed object; rebuild keyed by userEmail
+    const keyed = {};
+    arr.forEach(o => {
+      const email = o.userEmail || o.userEmailOrigin || o.user || 'guest';
+      if(!keyed[email]) keyed[email] = [];
+      keyed[email].push(o);
+    });
+    localStorage.setItem('orders', JSON.stringify(keyed));
+  }
+
+  function getUsers(){ return safeParse(localStorage.getItem('users')) || []; }
+  function saveUsers(users){ localStorage.setItem('users', JSON.stringify(users)); }
+
+  /* ---------------------- Renderers ---------------------- */
+
+  function renderStats(){
+    const users = getUsers(); const orders = loadOrdersRaw(); const products = getProducts();
+    $('#a-users').textContent = `${users.length} Users`; $('#a-orders').textContent = `${orders.length} Orders`; $('#a-products').textContent = `${products.length} Products`;
+    // recent orders
+    const recent = orders.slice().reverse().slice(0,5);
+    $('#recent-orders').innerHTML = recent.length ? recent.map(o=>`<div class="muted">${o.userEmail||o.user||'Guest'} — ${new Date(o.date||Date.now()).toLocaleString()} — ₹${o.total||0}</div>`).join('') : '<div class="muted">No recent orders</div>';
+    // recent notifs
+    const nots = safeParse(localStorage.getItem('notifications')) || [];
+    $('#recent-notifs').textContent = nots.length ? (nots[0].message || 'New notification') : '—';
+    $('#admin-welcome').textContent = `Welcome back, Admin — ${new Date().toLocaleString()}`;
+  }
+
+  /* ---------------------- Products UI ---------------------- */
+
+  const PRODUCTS_PAGE_SIZE = 10;
+  let productsState = { page:1, q:'', items:[] };
+
+  function refreshProductsState(){
+    productsState.items = getProducts();
+    productsState.page = 1;
+  }
+
+  function renderProductsTable(){
+    const tbody = $('#products-table tbody'); tbody.innerHTML = '';
+    const items = productsState.items.filter(p => productsState.q ? (p.name||'').toLowerCase().includes(productsState.q.toLowerCase()) : true);
+    const total = items.length;
+    const pages = Math.max(1, Math.ceil(total / PRODUCTS_PAGE_SIZE));
+    if(productsState.page > pages) productsState.page = pages;
+    const start = (productsState.page-1)*PRODUCTS_PAGE_SIZE; const pageItems = items.slice(start, start+PRODUCTS_PAGE_SIZE);
+    if(!pageItems.length){ tbody.innerHTML = '<tr><td colspan="6" class="muted">No products</td></tr>'; }
+    pageItems.forEach((p,idx)=>{
+      const price = p.offer ? (p.price * (1 - p.offer/100)).toFixed(0) : p.price;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${escapeHtml(p.id||('p'+(start+idx+1)))}</td>
+        <td>${escapeHtml(p.name||'')}</td>
+        <td>₹${price}</td>
+        <td>${p.offer||0}%</td>
+        <td>${escapeHtml(p.category||'-')}</td>
+        <td class="actions">
+          <button data-id="${p.id}" data-action="edit" class="small btn-ghost">Edit</button>
+          <button data-id="${p.id}" data-action="delete" class="small btn-danger">Delete</button>
+        </td>`;
+      tbody.appendChild(tr);
+    });
+
+    // pagination
+    const pagDiv = $('#products-pagination'); pagDiv.innerHTML = '';
+    for(let i=1;i<=pages;i++){
+      const b = document.createElement('button'); b.textContent = i; b.className = 'small'; if(i===productsState.page) b.disabled=true;
+      b.addEventListener('click', ()=>{ productsState.page=i; renderProductsTable(); });
+      pagDiv.appendChild(b);
+    }
+  }
+
+  function openEditProduct(id){
+    const products = getProducts();
+    const p = products.find(x => String(x.id) === String(id));
+    if(!p) return alert('Product not found');
+    $('#edit-id').value = p.id; $('#prod-name').value = p.name; $('#prod-price').value = p.price; $('#prod-offer').value = p.offer || 0; $('#prod-img').value = p.img||''; $('#prod-category').value = p.category||'';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  async function saveProductFromForm(e){
+    e.preventDefault();
+    const editId = $('#edit-id').value;
+    const name = $('#prod-name').value.trim(); const price = Number($('#prod-price').value); const offer = Number($('#prod-offer').value)||0;
+    const img = $('#prod-img').value.trim(); const category = $('#prod-category').value.trim();
+    if(!name || isNaN(price)) return alert('Name and numeric price required');
+
+    // If main.js exposes addProduct or a product API, prefer calling it
+    if(typeof window.addProduct === 'function' && !editId){
+      // create DOM-like event for backward compatibility
+      try { window.addProduct({ preventDefault(){}, target: { name, price, offer, img, category } }); } catch(err){ console.warn(err); }
+      // fallback reload
+      setTimeout(()=>{ refreshProductsState(); renderProductsTable(); renderStats(); }, 200);
+      clearProductForm();
+      return;
+    }
+
+    let arr = getProducts();
+    if(editId){
+      const idx = arr.findIndex(x => String(x.id) === String(editId));
+      if(idx === -1) return alert('Product not found');
+      arr[idx] = { ...arr[idx], name, price, offer, img, category };
+      saveProducts(arr);
+      showAdminToast('Product updated');
+    } else {
+      const newId = 'p'+Date.now();
+      arr.push({ id:newId, name, price, offer, img, category });
+      saveProducts(arr);
+      showAdminToast('Product added');
+    }
+    clearProductForm(); refreshProductsState(); renderProductsTable(); renderStats();
+  }
+
+  function clearProductForm(){
+    $('#edit-id').value=''; $('#prod-name').value=''; $('#prod-price').value=''; $('#prod-offer').value=''; $('#prod-img').value=''; $('#prod-category').value='';
+  }
+
+  function handleProductsTableClick(e){
+    const btn = e.target.closest('button[data-action]'); if(!btn) return;
+    const action = btn.dataset.action; const id = btn.dataset.id;
+    if(action==='edit') openEditProduct(id);
+    if(action==='delete'){
+      if(!confirm('Delete this product?')) return;
+      // prefer main.js delete action
+      if(typeof window.deleteProduct === 'function'){
+        try { window.deleteProduct(id); showAdminToast('Product deleted via main.js'); setTimeout(()=>refreshAll(),200); return; } catch(err){ console.warn(err); }
+      }
+      let arr = getProducts(); arr = arr.filter(x=>String(x.id)!==String(id)); saveProducts(arr); refreshProductsState(); renderProductsTable(); renderStats(); showAdminToast('Product deleted');
+    }
+  }
+
+  /* ---------------------- Orders UI ---------------------- */
+
+  const ORD_PAGE_SIZE = 12;
+  let ordersState = { page:1, q:'', status:'' };
+
+  function renderOrdersTable(){
+    const tbody = $('#orders-table tbody'); tbody.innerHTML='';
+    let rows = loadOrdersRaw();
+    if(ordersState.q){
+      const q = ordersState.q.toLowerCase();
+      rows = rows.filter(o => (o.id||o.orderId||'').toString().toLowerCase().includes(q) || (o.userEmail||o.user||'').toLowerCase().includes(q) || (o.items||[]).some(i => (i.name||'').toLowerCase().includes(q)));
+    }
+    if(ordersState.status) rows = rows.filter(o => (o.status||'').toLowerCase() === ordersState.status.toLowerCase());
+    const total = rows.length; const pages = Math.max(1,Math.ceil(total/ORD_PAGE_SIZE)); if(ordersState.page>pages) ordersState.page=pages;
+    const start=(ordersState.page-1)*ORD_PAGE_SIZE; const pageItems = rows.slice(start,start+ORD_PAGE_SIZE);
+    if(!pageItems.length){ tbody.innerHTML = '<tr><td colspan="8" class="muted">No orders found</td></tr>'; }
+    pageItems.forEach((o,idx)=>{
+      const orderId = o.id || o.orderId || ('ORD'+(start+idx+1));
+      const user = o.userEmail || o.user || 'Guest';
+      const date = o.date || o.createdAt || '-';
+      const status = o.status || 'Pending';
+      const totalVal = o.total || (o.items ? o.items.reduce((s,it)=>s + (Number(it.price)||0)*(Number(it.quantity)||0),0) : 0);
+      const itemsHtml = (o.items||[]).map(i=>`${escapeHtml(i.name)} x${i.quantity}`).join('<br>');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${start+idx+1}</td><td>${escapeHtml(orderId)}</td><td>${escapeHtml(user)}</td><td>${escapeHtml(new Date(date).toLocaleString())}</td><td>₹${totalVal}</td><td>${escapeHtml(status)}</td><td>${itemsHtml}</td><td class="actions">
+        <button data-action="ship" data-id="${orderId}" class="small">Ship</button>
+        <button data-action="deliver" data-id="${orderId}" class="small">Deliver</button>
+        <button data-action="cancel" data-id="${orderId}" class="small btn-ghost">Cancel</button>
+      </td>`;
+      tbody.appendChild(tr);
+    });
+    // pagination
+    const pag = $('#orders-pagination'); pag.innerHTML='';
+    for(let i=1;i<=pages;i++){ const b=document.createElement('button'); b.textContent=i; b.className='small'; if(i===ordersState.page) b.disabled=true; b.addEventListener('click',()=>{ ordersState.page=i; renderOrdersTable(); }); pag.appendChild(b);}
+  }
+
+  function handleOrderTableAction(e){
+    const btn = e.target.closest('button[data-action]'); if(!btn) return;
+    const action = btn.dataset.action; const orderId = btn.dataset.id;
+    let rows = loadOrdersRaw();
+    const idx = rows.findIndex(o => String(o.id)===String(orderId) || String(o.orderId)===String(orderId));
+    if(idx === -1) return alert('Order not found');
+    const statusMap = { ship:'Shipped', deliver:'Delivered', cancel:'Cancelled' };
+    const newStatus = statusMap[action] || action;
+    // prefer main.js updateOrderStatus if present
+    if(typeof window.updateOrderStatus === 'function'){
+      try { window.updateOrderStatus(orderId, newStatus); showAdminToast('Order status updated via main.js'); setTimeout(()=>refreshAll(),200); return; } catch(err){ console.warn(err); }
+    }
+    rows[idx].status = newStatus;
+    saveOrdersNormalized(rows);
+    renderOrdersTable(); renderStats(); showAdminToast(`Order ${orderId} marked ${newStatus}`);
+    // add notification
+    addAdminNotification(`Order ${orderId} marked ${newStatus}`);
+  }
+
+  /* ---------------------- Users UI ---------------------- */
+
+  const USERS_PAGE_SIZE = 12;
+  let usersState = { page:1, q:'' };
+
+  function renderUsersTable(){
+    const tbody = $('#users-table tbody'); tbody.innerHTML='';
+    let arr = getUsers();
+    if(usersState.q) { const q = usersState.q.toLowerCase(); arr = arr.filter(u => (u.username||u.name||'').toLowerCase().includes(q) || (u.email||'').toLowerCase().includes(q)); }
+    const total = arr.length; const pages = Math.max(1,Math.ceil(total/USERS_PAGE_SIZE)); if(usersState.page>pages) usersState.page=pages;
+    const start=(usersState.page-1)*USERS_PAGE_SIZE; const pageItems = arr.slice(start,start+USERS_PAGE_SIZE);
+    if(!pageItems.length){ tbody.innerHTML = '<tr><td colspan="5" class="muted">No users</td></tr>'; }
+    pageItems.forEach((u,i)=>{
+      const status = u.blocked ? 'Blocked' : 'Active';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${start+i+1}</td><td>${escapeHtml(u.username||u.name||'-')}</td><td>${escapeHtml(u.email||'-')}</td><td>${status}</td><td class="actions">
+        <button data-action="toggle" data-email="${u.email}" class="small">${u.blocked ? 'Unblock' : 'Block'}</button>
+        <button data-action="delete" data-email="${u.email}" class="small btn-ghost">Delete</button>
+      </td>`;
+      tbody.appendChild(tr);
+    });
+    const pag = $('#users-pagination'); pag.innerHTML='';
+    for(let i=1;i<=pages;i++){ const b=document.createElement('button'); b.textContent=i; b.className='small'; if(i===usersState.page) b.disabled=true; b.addEventListener('click',()=>{ usersState.page=i; renderUsersTable(); }); pag.appendChild(b);}
+  }
+
+  function handleUsersTableAction(e){
+    const btn = e.target.closest('button[data-action]'); if(!btn) return;
+    const action = btn.dataset.action; const email = btn.dataset.email;
+    let arr = getUsers(); const idx = arr.findIndex(u=>u.email===email); if(idx===-1) return alert('User not found');
+    if(action==='toggle'){ arr[idx].blocked = !arr[idx].blocked; saveUsers(arr); renderUsersTable(); showAdminToast(`${arr[idx].email} ${arr[idx].blocked ? 'blocked' : 'unblocked'}`); }
+    if(action==='delete'){ if(!confirm('Delete user?')) return; arr.splice(idx,1); saveUsers(arr); renderUsersTable(); showAdminToast('User deleted'); }
+  }
+
+  /* ---------------------- Analytics ---------------------- */
+
+  let salesChart = null;
+  function renderAnalytics(){
+    const days = Number($('#analytics-range').value) || 30;
+    const orders = loadOrdersRaw();
+    const cutoff = Date.now() - days*24*60*60*1000;
+    // revenue per day
+    const byDay = {};
+    orders.forEach(o => {
+      const ts = new Date(o.date || o.createdAt || Date.now()).getTime();
+      if(ts < cutoff) return;
+      const day = new Date(ts).toISOString().slice(0,10);
+      const total = o.total || (o.items ? o.items.reduce((s,i)=>s + (Number(i.price)||0)*(Number(i.quantity)||0),0) : 0);
+      byDay[day] = (byDay[day] || 0) + total;
+    });
+    const labels = Object.keys(byDay).sort();
+    const data = labels.map(d=>byDay[d]);
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    if(salesChart) salesChart.destroy();
+    salesChart = new Chart(ctx, { type:'line', data:{ labels, datasets:[{ label:'Revenue (₹)', data, borderColor:'#0f62fe', backgroundColor:'rgba(15,98,254,0.08)', fill:true }]}, options:{ responsive:true }});
+    // top products
+    const prodMap = {};
+    orders.forEach(o => (o.items||[]).forEach(it => { prodMap[it.name] = (prodMap[it.name]||0) + ((Number(it.price)||0)*(Number(it.quantity)||0)); }));
+    const top = Object.entries(prodMap).sort((a,b)=>b[1]-a[1]).slice(0,6);
+    $('#top-products').innerHTML = top.length ? top.map(t=>`<div class="card"><strong>${escapeHtml(t[0])}</strong><div class="muted">Revenue: ₹${Math.round(t[1])}</div></div>`).join('') : '<div class="muted">No product data</div>';
+  }
+
+  /* ---------------------- Notifications & tools ---------------------- */
+
+  function addAdminNotification(message){
+    // prefer main.js addNotification
+    if(typeof window.addNotification === 'function'){ window.addNotification(message); return; }
+    const list = safeParse(localStorage.getItem('notifications')) || [];
+    list.unshift({ id: Date.now(), message }); localStorage.setItem('notifications', JSON.stringify(list)); renderNotifs();
+  }
+
+  function renderNotifs(){
+    const list = safeParse(localStorage.getItem('notifications')) || [];
+    const wrap = $('#admin-notifs'); wrap.innerHTML = list.length ? list.map(n=>`<div><small class="muted">${new Date(n.id).toLocaleString()}</small><div>${escapeHtml(n.message)}</div></div>`).join('') : '<div class="muted">No notifications</div>';
+    $('#recent-notifs').textContent = list.length ? list[0].message : '—';
+  }
+
+  function exportData(){
+    const dump = { users:getUsers(), orders:loadOrdersRaw(), products:getProducts(), cart:safeParse(localStorage.getItem('cart'))||[], notifications:safeParse(localStorage.getItem('notifications'))||[] };
+    const blob = new Blob([JSON.stringify(dump,null,2)], { type:'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `luxora-backup-${Date.now()}.json`; a.click();
+  }
+
+  async function importData(){
+    const f = $('#import-file').files[0]; if(!f) return alert('Pick a JSON file');
+    try{
+      const txt = await f.text(); const data = JSON.parse(txt);
+      if(data.users) localStorage.setItem('users', JSON.stringify(data.users));
+      if(data.orders) localStorage.setItem('orders', JSON.stringify(data.orders));
+      if(data.products) localStorage.setItem('products', JSON.stringify(data.products));
+      if(data.cart) localStorage.setItem('cart', JSON.stringify(data.cart));
+      if(data.notifications) localStorage.setItem('notifications', JSON.stringify(data.notifications));
+      showAdminToast('Import complete'); refreshAll();
+    }catch(e){ alert('Invalid file'); console.error(e); }
+  }
+
+  function wipeData(){
+    if(!confirm('Erase users, orders, cart, notifications and products?')) return;
+    localStorage.removeItem('users'); localStorage.removeItem('orders'); localStorage.removeItem('cart'); localStorage.removeItem('notifications'); localStorage.removeItem('products');
+    showAdminToast('Local data wiped'); refreshAll();
+  }
+
+  function showAdminToast(msg){
+    // prefer main.js showNotification
+    if(typeof window.showNotification==='function'){ window.showNotification(msg); return; }
+    const el = document.createElement('div'); el.textContent = msg; el.style = 'position:fixed;right:20px;bottom:20px;background:#111;color:#fff;padding:8px 12px;border-radius:6px'; document.body.appendChild(el); setTimeout(()=>el.remove(),2400);
+  }
+
+  /* ---------------------- Quick add + events ---------------------- */
+
+  function refreshAll(){
+    refreshProductsState(); renderProductsTable(); renderOrdersTable(); renderUsersTable(); renderStats(); renderAnalytics(); renderNotifs();
+  }
+
+  function renderAnalytics(){ renderAnalyticsNow(); renderNotifs(); }
+
+  function renderAnalyticsNow(){ renderAnalyticsCore(); }
+  function renderAnalyticsCore(){ renderAnalytics && renderAnalytics; /* placeholder */ }
+
+  /* ---------------------- Wiring ---------------------- */
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // initialize
+    refreshProductsState(); renderStats(); renderNotifs();
+
+    // sidebar nav
+    document.querySelectorAll('.sidebar a[data-section]').forEach(a=>{
+      a.addEventListener('click', ev=>{
+        ev.preventDefault();
+        const id = a.getAttribute('data-section');
+        document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));
+        const sec = document.getElementById(id);
+        if(sec) sec.classList.remove('hidden');
+        refreshAll();
+      });
+    });
+
+    // default open dashboard
+    document.querySelector('.sidebar a[data-section]').click();
+
+    // quick add product
+    $('#quick-add-product').addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const name = $('#q-name').value.trim(), price = Number($('#q-price').value)||0, offer = Number($('#q-offer').value)||0, img = $('#q-img').value.trim();
+      if(!name) return alert('Name required');
+      const arr = getProducts(); const id = 'p'+Date.now(); arr.push({ id, name, price, offer, img }); saveProducts(arr); refreshProductsState(); renderProductsTable(); renderStats(); clearQuickAdd();
+      showAdminToast('Product added');
+    });
+    function clearQuickAdd(){ $('#q-name').value=''; $('#q-price').value=''; $('#q-offer').value=''; $('#q-img').value=''; }
+
+    // open product / orders quick nav
+    $('#go-products').addEventListener('click', ()=>{ document.querySelector('.sidebar a[data-section="products"]').click(); });
+    $('#go-orders').addEventListener('click', ()=>{ document.querySelector('.sidebar a[data-section="orders"]').click(); });
+
+    // test notification
+    $('#notify-test').addEventListener('click', ()=>{ addAdminNotification('Test notification from admin panel'); showAdminToast('Notification sent'); });
+
+    // products controls
+    $('#product-form').addEventListener('submit', saveProductFromForm);
+    $('#prod-clear').addEventListener('click', clearProductForm);
+    $('#products-table').addEventListener('click', handleProductsTableClick);
+    $('#search-products').addEventListener('input', (e)=>{ productsState.q = e.target.value; productsState.page=1; renderProductsTable(); });
+    $('#clear-search-products').addEventListener('click', ()=>{ $('#search-products').value=''; productsState.q=''; renderProductsTable(); });
+    $('#reload-products').addEventListener('click', ()=>{ refreshProductsState(); renderProductsTable(); renderStats(); });
+
+    // orders controls
+    $('#orders-table').addEventListener('click', handleOrderTableAction);
+    $('#search-orders').addEventListener('input', (e)=>{ ordersState.q = e.target.value; ordersState.page=1; renderOrdersTable(); });
+    $('#filter-order-status').addEventListener('change', (e)=>{ ordersState.status = e.target.value; ordersState.page=1; renderOrdersTable(); });
+    $('#reload-orders').addEventListener('click', ()=>{ renderOrdersTable(); renderStats(); });
+
+    // users controls
+    $('#users-table').addEventListener('click', handleUsersTableAction);
+    $('#search-users').addEventListener('input', (e)=>{ usersState.q = e.target.value; usersState.page=1; renderUsersTable(); });
+    $('#reload-users').addEventListener('click', ()=>{ renderUsersTable(); renderStats(); });
+
+    // analytics
+    $('#analytics-range').addEventListener('change', ()=>{ renderAnalytics(); });
+    $('#reload-analytics').addEventListener('click', ()=>{ renderAnalytics(); });
+
+    // tools
+    $('#export-data').addEventListener('click', exportData);
+    $('#import-data').addEventListener('click', importData);
+    $('#wipe-data').addEventListener('click', wipeData);
+    $('#clear-notifs').addEventListener('click', ()=>{ localStorage.removeItem('notifications'); renderNotifs(); showAdminToast('Notifications cleared'); });
+
+    // initial render
+    refreshAll();
+  });
+  </script>
+</body>
+</html>

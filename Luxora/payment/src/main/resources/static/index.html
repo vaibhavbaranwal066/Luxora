@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Test</title>
+</head>
+<body>
+    <h1>Test Payment</h1>
+    <button id="payBtn">Pay ₹500</button>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+    document.getElementById("payBtn").onclick = function () {
+        fetch("/api/payment/create-order?amount=500", { method: "POST" })
+        .then(res => res.json())
+        .then(order => {
+            var options = {
+                "key": "YOUR_KEY_ID",
+                "amount": order.amount,
+                "currency": order.currency,
+                "name": "My E-Commerce",
+                "description": "Test Transaction",
+                "order_id": order.id,
+                "handler": function (response) {
+                    alert("Payment Successful! ID: " + response.razorpay_payment_id);
+                }
+            };
+            var rzp = new Razorpay(options);
+            rzp.open();
+        });
+    };
+    </script>
+</body>
+</html>

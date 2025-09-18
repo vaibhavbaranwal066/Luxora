@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login / Sign Up – Luxora</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="logo">Luxora</a>
+    <a href="cart.html">🛒 Cart</a>
+  </nav>
+
+  <main class="container grid-2">
+    <!-- Login -->
+    <section class="card">
+      <h2>Login</h2>
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <input type="text" id="login-username" placeholder="Email or Username" required />
+        <input type="password" id="login-password" placeholder="Password" required />
+        <button type="submit">Login</button>
+      </form>
+    </section>
+
+    <!-- Sign Up -->
+    <section class="card">
+      <h2>Sign Up</h2>
+      <form id="signup-form" onsubmit="handleSignUp(event)">
+        <input type="text" id="signup-username" placeholder="Username" required />
+        <input type="email" id="signup-email" placeholder="Email" required />
+        <input type="password" id="signup-password" placeholder="Password" required />
+        <button type="submit">Create Account</button>
+      </form>
+    </section>
+  </main>
+
+  <script src="main.js"></script>
+  <script>
+    // If already logged in, redirect to profile
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const cu = JSON.parse(localStorage.getItem('currentUser')||'null');
+      if(cu){ location.href = 'profile.html'; }
+    });
+  </script>
+</body>
+</html>

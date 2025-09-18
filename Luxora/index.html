@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Luxora - E-Commerce</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="main.js"></script>
+</head>
+<body>
+  <!-- ================= WELCOME SCREEN ================= -->
+  <div id="welcome-screen">
+    <div class="welcome-text">
+      <h1>Welcome to Luxora</h1>
+      <p>Swipe through trends. Shop your favorites.</p>
+      <button onclick="skipWelcome()">Skip</button>
+    </div>
+  </div>
+  <!-- ================= NAVIGATION ================= -->
+  <nav>
+    <a href="index.html" class="logo" onclick="showSection('home')">Luxora</a>
+    <a href="index.html" onclick="showSection('home')">Home</a>
+    <a href="#" onclick="showSection('men')">Men</a>
+    <a href="#" onclick="showSection('women')">Women</a>
+    <a href="product.html" onclick="showSection('products')">Products</a>
+    <a href="cart.html" onclick="showSection('cart')">Cart</a>
+    <a href="checkout.html" onclick="showSection('checkout')">Checkout</a>
+
+    <!-- Categories Dropdown -->
+    <div class="dropdown">
+      <button class="dropbtn">Categories</button>
+      <div class="dropdown-content">
+        <a onclick="showCategoryProducts('electronics')">Electronics & Gadgets</a>
+        <a onclick="showCategoryProducts('fashion')">Fashion</a>
+        <a onclick="showCategoryProducts('beauty')">Beauty & Personal Care</a>
+        <a onclick="showCategoryProducts('home-kitchen')">Home & Kitchen</a>
+        <a onclick="showCategoryProducts('sports')">Sports & Fitness</a>
+        <a onclick="showCategoryProducts('books')">Books & Stationery</a>
+        <a onclick="showCategoryProducts('toys')">Toys & Baby Products</a>
+        <a onclick="showCategoryProducts('grocery')">Grocery & Food</a>
+        <a onclick="showCategoryProducts('automotive')">Automotive Accessories</a>
+        <a onclick="showCategoryProducts('jewelry')">Jewelry & Accessories</a>
+      </div>
+    </div>
+
+    <!-- Search with history -->
+    <div class="search-container">
+      <input type="text" placeholder="Search..." class="search-bar" id="search-bar">
+      <div id="search-history" class="search-history"></div>
+    </div>
+
+    <!-- Icons -->
+    <div class="nav-icons">
+      <a id="nav-offers" title="Offers">🎁</a>
+      <a id="nav-notif" title="Notifications">🔔</a>
+      <a href="#" title="Cart" onclick="showSection('cart')">🛒</a>
+    </div>
+
+    <!-- User Auth Links -->
+    <div id="user-container">
+      <a id="nav-login" onclick="showSection('login')">Login</a>
+      <a id="nav-signup" onclick="showSection('signup')">Sign Up</a>
+      <a id="nav-profile" class="hidden" onclick="showSection('profile')">My Profile</a>
+    </div>
+
+    <!-- Theme Toggle -->
+    <a id="theme-toggle">🌗 Theme</a>
+  </nav>
+  <!-- ================= ADVERTISEMENT BANNER ================= -->
+  <section id="advertisement">
+    
+    <h2>🔥 Big Sale is Live! Get up to 70% Off 🔥</h2>
+    <p>Limited time only. Shop your favorites now!</p>
+  </section>
+
+  <!-- ================= HOME SECTION ================= -->
+  <section id="home" class="page-section active">
+    <h2>Featured Collections</h2>
+
+    <!-- Image Carousel -->
+    <div class="carousel">
+      <div class="carousel-container">
+      </div>
+      <button class="carousel-btn prev" onclick="prevSlide()">&#10094;</button>
+        <img src="img/adb1.jpg" alt="Banner 1">
+        <img src="img/adb2.jpg" alt="Banner 3">
+        <img src="img/adb3.jpg" alt="Banner 3">
+        
+      <button class="carousel-btn next" onclick="nextSlide()">&#10095;</button>
+    </div>
+  </section>
+  <!-- ================= MEN SECTION ================= -->
+  <section id="men" class="page-section hidden">
+
+    <h2>Men's Collection</h2>
+    
+    <div class="product-grid" id="men-products">
+       <img src="img/p2.jpg" alt="men 1">
+        <img src="img/p13.jpg" alt="men 2">
+        <img src="img/p15.jpg" alt="men 3">
+
+
+      <!-- Products dynamically loaded -->
+    </div>
+  </section>
+
+  <!-- ================= WOMEN SECTION ================= -->
+  <section id="women" class="page-section hidden">
+    <h2>Women's Collection</h2>
+    <div class="product-grid" id="women-products">
+       <img src="img/p14.jpg" alt="women 1">
+        <img src="img/p21.jpg" alt="women 2">
+
+
+      <!-- Products dynamically loaded -->
+    </div>
+  </section>
+  <!-- ================= PRODUCTS SECTION ================= -->
+  <section id="products" class="page-section hidden">
+
+    <h2>All Products</h2>
+
+    <!-- Filters -->
+    <div class="filters">
+      <!-- Category Filter -->
+      <label for="categoryFilter">Filter by Category:</label>
+      <select id="categoryFilter" onchange="filterProducts()">
+        <option value="all">All</option>
+        <option value="electronics">Electronics</option>
+        <option value="fashion">Fashion</option>
+        <option value="beauty">Beauty</option>
+        <option value="home-kitchen">Home & Kitchen</option>
+        <option value="sports">Sports</option>
+        <option value="books">Books</option>
+        <option value="toys">Toys</option>
+        <option value="grocery">Grocery</option>
+        <option value="automotive">Automotive</option>
+        <option value="jewelry">Jewelry</option>
+      </select>
+
+      <!-- Price Filter -->
+      <label for="priceFilter">Max Price:</label>
+      <input type="number" id="priceFilter" placeholder="Enter max price" oninput="filterProducts()">
+    </div>
+
+    <!-- Product Grid -->
+    <div class="product-grid" id="all-products">
+      <!-- Products dynamically loaded via main.js -->
+             <img src="img/p1.jpg" alt="p1">
+      <img src="img/p2.jpg" alt="p2">
+      <img src="img/p3.jpg" alt="p3">
+      <img src="img/p4.jpg" alt="p4">
+      <img src="img/p5.jpg" alt="p5">
+      <img src="img/p6.jpg" alt="p1">
+      <img src="img/p7.jpg" alt="p2">
+      <img src="img/p8.jpg" alt="p3">
+      <img src="img/p9.jpg" alt="p4">
+      <img src="img/p10.jpg" alt="p5">
+       <img src="img/p11.jpg" alt="p1">
+      <img src="img/p12.jpg" alt="p2">
+      <img src="img/p13.jpg" alt="p3">
+      <img src="img/p14.jpg" alt="p4">
+      <img src="img/p15.jpg" alt="p5">
+      <img src="img/p16.jpg" alt="p1">
+      <img src="img/p17.jpg" alt="p2">
+      <img src="img/p18.jpg" alt="p3">
+      <img src="img/p19.jpg" alt="p4">
+      <img src="img/p20.jpg" alt="p5">
+      <img src="img/p21.jpg" alt="p5">
+
+
+
+    </div>
+  </section>
+  <!-- ================= PRODUCT DETAILS SECTION ================= -->
+  <section id="product-details" class="page-section hidden">
+    <button onclick="showSection('products')">⬅ Back to Products</button>
+    
+    <div class="product-detail-container">
+      <img src="img/p20.jpg" alt="p5">
+
+      
+      <!-- Left: Product Image + 360 Viewer -->
+      <div class="product-images">
+        <img id="main-product-image" src="" alt="Product" class="zoomable">
+
+        <!-- 360° Viewer -->
+        <div id="viewer360" class="viewer360 hidden">
+          <img id="viewer-image" src="img/p1.jpg" alt="360 view">
+          <div class="viewer-controls">
+            <button onclick="prevFrame()">⟨</button>
+            <button onclick="nextFrame()">⟩</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Product Info -->
+      <div class="product-info">
+        <h2 id="product-title"></h2>
+        <p id="product-description"></p>
+        <p><strong>Price: </strong>₹<span id="product-price"></span></p>
+        
+        <!-- Add to Cart -->
+        <button onclick="addToCartFromDetails()">🛒 Add to Cart</button>
+      </div>
+    </div>
+
+    <!-- ================= REVIEWS SECTION ================= -->
+    <div class="reviews">
+      <h3>Customer Reviews</h3>
+      <ul id="reviews-list">
+        <!-- Reviews dynamically loaded -->
+      </ul>
+
+      <!-- Add Review Form -->
+      <div class="review-form">
+        <h4>Write a Review</h4>
+        <input type="text" id="reviewer-name" placeholder="Your Name">
+        <textarea id="review-text" placeholder="Write your review..."></textarea>
+        <label for="review-rating">Rating:</label>
+        <select id="review-rating">
+          <option value="5">⭐ 5</option>
+          <option value="4">⭐ 4</option>
+          <option value="3">⭐ 3</option>
+          <option value="2">⭐ 2</option>
+          <option value="1">⭐ 1</option>
+        </select>
+        <button onclick="submitReview()">Submit Review</button>
+      </div>
+    </div>
+  </section>
+    <!-- ================= CART SECTION ================= -->
+  <section id="cart" class="page-section hidden">
+    <h2>Your Shopping Cart</h2>
+    <div id="cart-items">
+      <!-- Cart items dynamically loaded -->
+    </div>
+    <p><strong>Total: ₹<span id="cart-total">0</span></strong></p>
+
+    <button onclick="showSection('checkout')">Proceed to Checkout</button>
+    <button onclick="clearCart()">Clear Cart</button>
+  </section>
+
+  <!-- ================= CHECKOUT SECTION ================= -->
+  <section id="checkout" class="page-section hidden">
+    <h2>Checkout</h2>
+    <form id="checkout-form" onsubmit="processCheckout(event)">
+      <!-- User Details -->
+      <label for="name">Full Name:</label>
+      <input type="text" id="name" required>
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" required>
+
+      <label for="address">Shipping Address:</label>
+      <textarea id="address" required></textarea>
+
+      <!-- Payment Integration Placeholder -->
+      <h3>Payment Method</h3>
+      <label><input type="radio" name="payment" value="razorpay" checked> Razorpay</label>
+      <label><input type="radio" name="payment" value="stripe"> Stripe</label>
+      
+      <button type="submit">Pay Now</button>
+    </form>
+  </section>
+  <!-- ================= WISHLIST SECTION ================= -->
+  <section id="wishlist" class="page-section hidden">
+    <h2>My Wishlist</h2>
+    <div id="wishlist-items">
+      <!-- Wishlist items dynamically loaded -->
+    </div>
+    <button onclick="clearWishlist()">Clear Wishlist</button>
+  </section>
+
+  <!-- ================= ORDER HISTORY SECTION ================= -->
+  <section id="orders" class="page-section hidden">
+    <h2>Order History</h2>
+    <div id="order-history">
+      <!-- Orders dynamically loaded -->
+    </div>
+  </section>
+
+  <!-- ================= SEARCH HISTORY SECTION ================= -->
+  <section id="search-history" class="page-section hidden">
+    <h2>Search History</h2>
+    <ul id="search-history-list">
+      <!-- Search history dynamically loaded -->
+    </ul>
+    <button onclick="clearSearchHistory()">Clear Search History</button>
+  </section>
+  <!-- ================= AUTH SECTION ================= -->
+  <section id="auth" class="page-section hidden">
+    <h2>Login / Signup</h2>
+    <div class="auth-container">
+      <!-- Login Form -->
+      <form id="login-form" onsubmit="loginUser(event)">
+        <h3>Login</h3>
+        <input type="email" id="login-email" placeholder="Email" required>
+        <input type="password" id="login-password" placeholder="Password" required>
+        <button type="submit">Login</button>
+      </form>
+
+      <!-- Signup Form -->
+      <form id="signup-form" onsubmit="signupUser(event)">
+        <h3>Signup</h3>
+        <input type="text" id="signup-name" placeholder="Full Name" required>
+        <input type="email" id="signup-email" placeholder="Email" required>
+        <input type="password" id="signup-password" placeholder="Password" required>
+        <button type="submit">Signup</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ================= USER PROFILE SECTION ================= -->
+  <section id="profile" class="page-section hidden">
+    <h2>My Profile</h2>
+    <div id="profile-info">
+      <!-- User info dynamically loaded -->
+    </div>
+    <button onclick="showSection('settings')">Go to Settings</button>
+    <button onclick="logoutUser()">Logout</button>
+  </section>
+
+  <!-- ================= SETTINGS SECTION ================= -->
+  <section id="settings" class="page-section hidden">
+    <h2>Settings</h2>
+    <form id="settings-form" onsubmit="updateSettings(event)">
+      <label for="username">Change Username:</label>
+      <input type="text" id="username">
+
+      <label for="user-email">Change Email:</label>
+      <input type="email" id="user-email">
+
+      <label for="user-password">Change Password:</label>
+      <input type="password" id="user-password">
+
+      <button type="submit">Save Changes</button>
+    </form>
+  </section>
+  <!-- ================= DASHBOARD SECTION ================= -->
+  <section id="dashboard" class="page-section hidden">
+    <h2>User Dashboard</h2>
+    <div class="dashboard-cards">
+      <div class="card" onclick="showSection('orders')">
+        <h3>My Orders</h3>
+        <p>Track your purchases</p>
+      </div>
+      <div class="card" onclick="showSection('wishlist')">
+        <h3>My Wishlist</h3>
+        <p>Saved favorite items</p>
+      </div>
+      <div class="card" onclick="showSection('cart')">
+        <h3>My Cart</h3>
+        <p>View items in cart</p>
+      </div>
+      <div class="card" onclick="showSection('profile')">
+        <h3>My Profile</h3>
+        <p>Update details</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= NOTIFICATIONS SECTION ================= -->
+  <section id="notifications" class="page-section hidden">
+    <h2>Notifications</h2>
+    <ul id="notification-list">
+      <!-- Notifications dynamically loaded -->
+    </ul>
+    <button onclick="clearNotifications()">Clear All</button>
+  </section>
+
+  <!-- ================= ADMIN PANEL SECTION ================= -->
+  <section id="admin" class="page-section hidden">
+    <h2>Admin Panel</h2>
+
+    <!-- Add Product -->
+    <h3>Add New Product</h3>
+    <form id="admin-add-product" onsubmit="addProduct(event)">
+      <input type="text" id="product-name" placeholder="Product Name" required>
+      <input type="text" id="product-category" placeholder="Category" required>
+      <input type="number" id="product-price" placeholder="Price" required>
+      <input type="url" id="product-image" placeholder="https://www.amazon.in/Rockerz-425-Bluetooth-Headphones-Signature/dp/B09QL3K2GD" required>
+      <button type="submit">Add Product</button>
+    </form>
+
+    <!-- Manage Orders -->
+    <h3>Manage Orders</h3>
+    <div id="admin-orders">
+      <!-- Orders dynamically loaded -->
+    </div>
+
+  </section>
+

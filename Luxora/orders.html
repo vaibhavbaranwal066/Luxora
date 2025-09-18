@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Orders – Luxora</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="logo">Luxora</a>
+    <a href="profile.html">Profile</a>
+    <a href="cart.html">🛒 Cart</a>
+  </nav>
+
+  <main class="container">
+    <h1>My Orders</h1>
+    <ul id="orders-list" class="order-list"></ul>
+  </main>
+
+  <script src="main.js"></script>
+  <script>
+    function renderOrders(){
+      const currentUser = JSON.parse(localStorage.getItem('currentUser')||'null');
+      if(!currentUser){ alert('Please login first.'); location.href = 'signup.html'; return; }
+
+      const orders = JSON.parse(localStorage.getItem('orders')||'[]').filter(o => o.userEmail === currentUser.email);
+      const ul = document.getElementById('orders-list');
+      ul.innerHTML = '';
+
+      if(!orders.length){
+        ul.innerHTML = '<li>No orders yet.</li>';
+        return;
+      }
+
+      orders.forEach((o, idx)=>{
+        const li = document.createElement('li');
+        li.className = 'order-item';
+        li.innerHTML = `
+          <div class="order-head">
+            <strong>Order ${idx+1}</strong> — ${o.date || '-'} — ₹${o.total}
+          </div>
+          <div class="order-items">
+            ${(o.items||[]).map(i=>`<span>${i.name} x${i.quantity}${i.address?` — ${i.address}`:''}</span>`).join('<br>')}
+          </div>
+        `;
+        ul.appendChild(li);
+      });
+    }
+    document.addEventListener('DOMContentLoaded', renderOrders);
+  </script>
+</body>
+</html>

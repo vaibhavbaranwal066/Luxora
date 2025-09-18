@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Profile – Luxora</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="logo">Luxora</a>
+    <a href="orders.html">My Orders</a>
+    <a href="wishlist.html">Wishlist</a>
+    <a href="cart.html">🛒 Cart</a>
+  </nav>
+
+  <main class="container">
+    <h1>My Profile</h1>
+    <div class="card">
+      <p><strong>Name:</strong> <span id="profile-name">—</span></p>
+      <p><strong>Email:</strong> <span id="profile-email">—</span></p>
+      <div style="margin-top:1rem;">
+        <button id="btn-orders" onclick="location.href='orders.html'">My Orders</button>
+        <button id="btn-logout">Logout</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="main.js"></script>
+  <script>
+    function fillProfile(){
+      const currentUser = JSON.parse(localStorage.getItem('currentUser')||'null');
+      if(!currentUser){
+        alert('Please login first.');
+        location.href = 'signup.html';
+        return;
+      }
+      document.getElementById('profile-name').textContent = currentUser.username || '-';
+      document.getElementById('profile-email').textContent = currentUser.email || '-';
+    }
+    document.getElementById('btn-logout').addEventListener('click', ()=>{
+      if(window.handleLogout){ handleLogout(); }
+      else {
+        localStorage.removeItem('currentUser');
+        location.href = 'index.html';
+      }
+    });
+    document.addEventListener('DOMContentLoaded', fillProfile);
+  </script>
+</body>
+</html>

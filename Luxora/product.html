@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Product Details</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav>
+    <a href="index.html" class="logo">Luxora</a>
+    <a href="cart.html">🛒 Cart</a>
+    <a href="index.html">Home</a>
+    <a href="index.html#men">Men</a>
+    <a href="index.html#women">Women</a>
+    <a href="wishlist.html">❤️ Wishlist</a>
+    <a href="profile.html">👤 Profile</a>
+  </nav>
+
+  <!-- Product Detail Page -->
+  <div class="product-detail-page">
+    <!-- Product Images -->
+    <div class="product-images">
+      <img src="img/p10.jpg" alt="Main Product Image" id="main-img">
+      <div class="thumbs">
+        <img id="thumb1" src="img/p11.jpg" onclick="changeImage(this.src)">
+        <img id="thumb2" src="img/p12.jpg" onclick="changeImage(this.src)">
+        <img id="thumb3" src="img/p13.jpg" onclick="changeImage(this.src)">
+      </div>
+    </div>
+
+    <!-- Product Info -->
+    <div class="product-info">
+      <h1 id="product-name">Product Name</h1>
+      <p class="price" id="product-price">₹0.00</p>
+      <p class="offer" id="product-offer"></p>
+
+      <!-- Size Selector -->
+      <p class="size">Size:
+        <select id="product-size">
+          <option>Small</option>
+          <option>Medium</option>
+          <option>Large</option>
+        </select>
+      </p>
+
+      <!-- Quantity Selector -->
+      <p>Quantity:
+        <input type="number" id="product-quantity" value="1" min="1" style="width:60px;">
+      </p>
+
+      <!-- Address Input -->
+      <p>Delivery Address:
+        <input type="text" id="delivery-address" placeholder="Enter your address" style="width:100%; padding:8px;">
+      </p>
+
+      <!-- Buttons -->
+      <div class="buttons">
+        <button id="add-to-cart-btn">Add to Cart</button>
+        <button id="add-to-wishlist-btn">Add to Wishlist</button>
+      </div>
+
+      <!-- Highlights & Ratings -->
+      <p class="highlights"><strong>Key Highlights:</strong> <span id="product-highlights">Durable, Lightweight, Stylish</span></p>
+      <p class="rating" id="product-rating">⭐⭐⭐⭐☆ (4.2/5)</p>
+    </div>
+  </div>
+
+  <!-- Script -->
+  <script src="main.js"></script>
+  <script>
+    // ======== Utility: Change Image ========
+    function changeImage(src) {
+      document.getElementById("main-img").src = src;
+    }
+
+    // ======== Read Query Parameters ========
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id") || "p1";
+    const name = params.get("name") || "Sample Product";
+    const price = parseFloat(params.get("price")) || 0;
+    const offer = parseFloat(params.get("offer")) || 0;
+
+    // ======== Populate Product Details ========
+    const mainImg = document.getElementById("main-img");
+    const productName = document.getElementById("product-name");
+    const productPrice = document.getElementById("product-price");
+    const productOffer = document.getElementById("product-offer");
+
+    mainImg.src = `img/${id}.jpg`;
+    document.getElementById("thumb1").src = `img/${id}.jpg`;
+    document.getElementById("thumb2").src = `img/${id}_2.jpg`;
+    document.getElementById("thumb3").src = `img/${id}_3.jpg`;
+
+    productName.textContent = name;
+    const discountedPrice = offer ? price * (1 - offer/100) : price;
+    productPrice.textContent = `₹${discountedPrice.toFixed(2)}`;
+    productOffer.textContent = offer ? `Offer: ${offer}% OFF` : "";
+
+    // ======== Add to Cart ========
+    document.getElementById("add-to-cart-btn").addEventListener("click", () => {
+      const qty = parseInt(document.getElementById("product-quantity").value);
+      const address = document.getElementById("delivery-address").value || "No address provided";
+      addToCart(id, name, discountedPrice, qty, address);
+      showNotification(`${name} x${qty} added to cart ✅`);
+    });
+
+    // ======== Add to Wishlist ========
+    document.getElementById("add-to-wishlist-btn").addEventListener("click", () => {
+      addToWishlist(id, name, discountedPrice);
+      showNotification(`${name} added to wishlist ❤️`);
+    });
+  </script>
+</body>
+</html>
