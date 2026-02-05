@@ -762,6 +762,290 @@ function showNotification(message, type = "info") {
 }
 
 // ========================================
+// SECTION 12B: PRODUCT REVIEWS (MISSING)
+// ========================================
+
+function getReviews() {
+  return JSON.parse(localStorage.getItem("productReviews")) || [];
+}
+
+function saveReviews(reviews) {
+  localStorage.setItem("productReviews", JSON.stringify(reviews));
+}
+
+function submitReview() {
+  const name = document.getElementById("reviewer-name")?.value.trim();
+  const text = document.getElementById("review-text")?.value.trim();
+  const rating = document.getElementById("review-rating")?.value;
+
+  if (!name || !text || !rating) {
+    alert("Please fill all review fields!");
+    return;
+  }
+
+  let reviews = getReviews();
+  reviews.push({
+    id: Date.now(),
+    name,
+    text,
+    rating: parseInt(rating),
+    date: new Date().toLocaleString()
+  });
+
+  saveReviews(reviews);
+  alert("Thank you for your review!");
+  
+  // Clear form
+  document.getElementById("reviewer-name").value = "";
+  document.getElementById("review-text").value = "";
+  document.getElementById("review-rating").value = "5";
+  
+  loadReviews();
+}
+
+function loadReviews() {
+  const reviewsList = document.getElementById("reviews-list");
+  if (!reviewsList) return;
+
+  const reviews = getReviews();
+
+  if (reviews.length === 0) {
+    reviewsList.innerHTML = "<p>No reviews yet. Be the first to review!</p>";
+    return;
+  }
+
+  reviewsList.innerHTML = reviews.map(review => `
+    <li style="padding: 15px; border: 1px solid #333; margin: 10px 0; border-radius: 5px; background: #111;">
+      <strong>${review.name}</strong> - ${'⭐'.repeat(review.rating)}
+      <small style="color: #999; float: right;">${review.date}</small>
+      <p>${review.text}</p>
+      <button onclick="deleteReview(${review.id})" style="background: #e50914; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Delete</button>
+    </li>
+  `).join("");
+}
+
+function deleteReview(reviewId) {
+  if (confirm("Delete this review?")) {
+    let reviews = getReviews();
+    reviews = reviews.filter(r => r.id !== reviewId);
+    saveReviews(reviews);
+    loadReviews();
+  }
+}
+
+// ========================================
+// SECTION 12C: PRODUCT DETAILS FROM PRODUCT CARD
+// ========================================
+
+function addToCartFromDetails() {
+  const productId = document.getElementById("product-id")?.value || "p1";
+  const name = document.getElementById("product-title")?.innerText || "Product";
+  const price = parseFloat(document.getElementById("product-price")?.innerText || 0);
+  const image = document.getElementById("main-product-image")?.src || "img/p1.jpg";
+  
+  if (!name || !price) {
+    alert("Product information incomplete!");
+    return;
+  }
+
+  addToCart(productId, name, price, image);
+}
+
+// ========================================
+// SECTION 12D: 360 PRODUCT VIEWER
+// ========================================
+
+let currentFrame = 0;
+
+function prevFrame() {
+  currentFrame = (currentFrame - 1 + 5) % 5;
+  updateViewerFrame();
+}
+
+function nextFrame() {
+  currentFrame = (currentFrame + 1) % 5;
+  updateViewerFrame();
+}
+
+function updateViewerFrame() {
+  const viewerImage = document.getElementById("viewer-image");
+  if (viewerImage) {
+    viewerImage.style.opacity = "0.5";
+    setTimeout(() => {
+      viewerImage.style.opacity = "1";
+    }, 100);
+  }
+}
+
+// ========================================
+// SECTION 12E: ADMIN PANEL FEATURES
+// ========================================
+
+function getAdminProducts() {
+  return JSON.parse(localStorage.getItem("adminProducts")) || [];
+}
+
+function saveAdminProducts(products) {
+  localStorage.setItem("adminProducts", JSON.stringify(products));
+}
+
+function addProduct(event) {
+  event.preventDefault();
+
+  const name = document.getElementById("product-name")?.value.trim();
+  const category = document.getElementById("product-category")?.value.trim();
+  const price = document.getElementById("product-price")?.value.trim();
+  const image = document.getElementById("product-image")?.value.trim();
+
+  if (!name || !category || !price || !image) {
+    alert("All fields are required!");
+    return;
+  }
+
+  let products = getAdminProducts();
+  const newProduct = {
+    id: "custom" + Date.now(),
+    name,
+    category,
+    price: parseFloat(price),
+    image
+  };
+
+  products.push(newProduct);
+  saveAdminProducts(products);
+  
+  alert("Product added successfully!");
+  
+  // Clear form
+  document.getElementById("product-name").value = "";
+  document.getElementById("product-category").value = "";
+  document.getElementById("product-price").value = "";
+  document.getElementById("product-image").value = "";
+  
+  loadAdminProducts();
+}
+
+function loadAdminProducts() {
+  const adminOrders = document.getElementById("admin-orders");
+  if (!adminOrders) return;
+
+  const products = getAdminProducts();
+
+  if (products.length === 0) {
+    adminOrders.innerHTML = "<p>No custom products added yet.</p>";
+    return;
+  }
+
+  adminOrders.innerHTML = `
+    <table style="width: 100%; border-collapse: collapse;">
+      <tr style="background: #222;">
+        <th style="border: 1px solid #333; padding: 10px;">Product Name</th>
+        <th style="border: 1px solid #333; padding: 10px;">Category</th>
+        <th style="border: 1px solid #333; padding: 10px;">Price</th>
+        <th style="border: 1px solid #333; padding: 10px;">Actions</th>
+      </tr>
+      ${products.map(p => `
+        <tr style="border: 1px solid #333;">
+          <td style="border: 1px solid #333; padding: 10px;">${p.name}</td>
+          <td style="border: 1px solid #333; padding: 10px;">${p.category}</td>
+          <td style="border: 1px solid #333; padding: 10px;">₹${p.price}</td>
+          <td style="border: 1px solid #333; padding: 10px;">
+            <button onclick="deleteAdminProduct('${p.id}')" style="background: #e50914; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Delete</button>
+          </td>
+        </tr>
+      `).join("")}
+    </table>
+  `;
+}
+
+function deleteAdminProduct(productId) {
+  if (confirm("Delete this product?")) {
+    let products = getAdminProducts();
+    products = products.filter(p => p.id !== productId);
+    saveAdminProducts(products);
+    loadAdminProducts();
+  }
+}
+
+// ========================================
+// SECTION 12F: USER SETTINGS UPDATE
+// ========================================
+
+function updateSettings(event) {
+  event.preventDefault();
+
+  let user = JSON.parse(localStorage.getItem("activeUser"));
+  if (!user) {
+    alert("Please login first!");
+    return;
+  }
+
+  const username = document.getElementById("username")?.value.trim();
+  const userEmail = document.getElementById("user-email")?.value.trim();
+  const userPassword = document.getElementById("user-password")?.value.trim();
+
+  if (username) user.name = username;
+  if (userEmail) user.email = userEmail;
+  if (userPassword) user.password = userPassword;
+
+  localStorage.setItem("activeUser", JSON.stringify(user));
+  alert("Settings updated successfully!");
+
+  // Update users array
+  let users = JSON.parse(localStorage.getItem("users")) || [];
+  users = users.map(u => u.id === user.id ? user : u);
+  localStorage.setItem("users", JSON.stringify(users));
+
+  // Clear form
+  document.getElementById("username").value = "";
+  document.getElementById("user-email").value = "";
+  document.getElementById("user-password").value = "";
+}
+
+// ========================================
+// SECTION 12G: CLEAR WISHLIST
+// ========================================
+
+function clearWishlist() {
+  if (confirm("Clear entire wishlist? This cannot be undone.")) {
+    localStorage.removeItem("wishlist");
+    renderWishlist();
+    alert("Wishlist cleared!");
+  }
+}
+
+// ========================================
+// SECTION 12H: NOTIFICATION & OFFERS ICONS
+// ========================================
+
+function updateNotificationBadge() {
+  const notifications = JSON.parse(localStorage.getItem("notifications")) || [];
+  const notifIcon = document.getElementById("nav-notif");
+  
+  if (notifIcon && notifications.length > 0) {
+    const badge = notifIcon.querySelector(".badge") || document.createElement("span");
+    badge.className = "badge";
+    badge.style.cssText = `
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #e50914;
+      color: white;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 11px;
+      font-weight: bold;
+    `;
+    badge.innerText = notifications.length;
+    
+    if (!notifIcon.querySelector(".badge")) {
+      notifIcon.style.position = "relative";
+      notifIcon.appendChild(badge);
+    }
+  }
+}
+
+// ========================================
 // SECTION 14: INITIALIZATION
 // ========================================
 
@@ -779,13 +1063,33 @@ document.addEventListener("DOMContentLoaded", () => {
   loadOrders();
   loadUserProfile();
   loadNotifications();
+  loadAdminProducts();
+  loadReviews();
   displayOffers();
   renderSearchHistory();
+  updateNotificationBadge();
 
   // Welcome screen
   const skipBtn = document.getElementById("enter-btn");
   if (skipBtn) {
     skipBtn.onclick = skipWelcome;
+  }
+
+  // Notification icon
+  const notifIcon = document.getElementById("nav-notif");
+  if (notifIcon) {
+    notifIcon.style.cursor = "pointer";
+    notifIcon.addEventListener("click", () => showSection("notifications"));
+  }
+
+  // Offers icon
+  const offersIcon = document.getElementById("nav-offers");
+  if (offersIcon) {
+    offersIcon.style.cursor = "pointer";
+    offersIcon.addEventListener("click", () => {
+      addNotification("🎁 Check out our latest flash deals and promotions!");
+      showSection("products");
+    });
   }
 
   // Search functionality
@@ -848,6 +1152,24 @@ document.addEventListener("DOMContentLoaded", () => {
   const checkoutForm = document.getElementById("checkout-form");
   if (checkoutForm) {
     checkoutForm.addEventListener("submit", processCheckout);
+  }
+
+  // Settings form
+  const settingsForm = document.getElementById("settings-form");
+  if (settingsForm) {
+    settingsForm.addEventListener("submit", updateSettings);
+  }
+
+  // Admin add product form
+  const adminForm = document.getElementById("admin-add-product");
+  if (adminForm) {
+    adminForm.addEventListener("submit", addProduct);
+  }
+
+  // Wishlist clear button
+  const clearWishlistBtn = document.querySelector("[onclick='clearWishlist()']");
+  if (clearWishlistBtn) {
+    clearWishlistBtn.addEventListener("click", clearWishlist);
   }
 
   // Notification clear button

@@ -50,9 +50,9 @@
 
     <!-- Icons -->
     <div class="nav-icons">
-      <a id="nav-offers" title="Offers">🎁</a>
-      <a id="nav-notif" title="Notifications">🔔</a>
-      <a href="#" title="Cart" onclick="showSection('cart')">🛒</a>
+      <a id="nav-offers" title="Offers" style="cursor: pointer;">🎁</a>
+      <a id="nav-notif" title="Notifications" style="cursor: pointer;">🔔</a>
+      <a href="#" title="Cart" onclick="showSection('cart')" style="position: relative;">🛒 <span id="cart-count" style="background: #e50914; color: white; border-radius: 50%; padding: 2px 6px; font-size: 11px; position: absolute; top: -8px; right: -8px; min-width: 18px; text-align: center;">0</span></a>
     </div>
 
     <!-- User Auth Links -->
@@ -73,15 +73,82 @@
 
   <!-- ================= HOME SECTION ================= -->
   <section id="home" class="page-section">
-    <h2>Featured Collections</h2>
+    <!-- Hero Section with Carousel -->
+    <div class="hero-section">
+      <h2 style="text-align: center; font-size: 32px; margin-bottom: 20px;">Featured Collections</h2>
+      <p style="text-align: center; color: #999; margin-bottom: 30px;">Discover our latest and trending products</p>
 
-    <!-- Image Carousel -->
-    <div class="carousel">
-      <button class="carousel-btn prev" onclick="prevSlide()">&#10094;</button>
-      <img src="img/adb1.jpg" alt="Banner 1" style="display: block;">
-      <img src="img/adb2.jpg" alt="Banner 2" style="display: none;">
-      <img src="img/adb3.jpg" alt="Banner 3" style="display: none;">
-      <button class="carousel-btn next" onclick="nextSlide()">&#10095;</button>
+      <!-- Image Carousel -->
+      <div class="carousel" style="margin-bottom: 40px;">
+        <button class="carousel-btn prev" onclick="prevSlide()">&#10094;</button>
+        <img src="img/adb1.jpg" alt="Banner 1" style="display: block;">
+        <img src="img/adb2.jpg" alt="Banner 2" style="display: none;">
+        <img src="img/adb3.jpg" alt="Banner 3" style="display: none;">
+        <button class="carousel-btn next" onclick="nextSlide()">&#10095;</button>
+      </div>
+    </div>
+
+    <!-- Featured Categories Section -->
+    <div class="featured-categories" style="margin: 40px 0;">
+      <h3 style="text-align: center; font-size: 24px; margin-bottom: 30px;">Shop by Category</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; padding: 0 20px;">
+        <div onclick="showCategoryProducts('electronics')" style="padding: 20px; background: #1a1a1a; border-radius: 8px; text-align: center; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+          <div style="font-size: 30px; margin-bottom: 10px;">📱</div>
+          <p style="font-weight: bold;">Electronics</p>
+        </div>
+        <div onclick="showCategoryProducts('fashion')" style="padding: 20px; background: #1a1a1a; border-radius: 8px; text-align: center; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+          <div style="font-size: 30px; margin-bottom: 10px;">👕</div>
+          <p style="font-weight: bold;">Fashion</p>
+        </div>
+        <div onclick="showCategoryProducts('beauty')" style="padding: 20px; background: #1a1a1a; border-radius: 8px; text-align: center; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+          <div style="font-size: 30px; margin-bottom: 10px;">💄</div>
+          <p style="font-weight: bold;">Beauty</p>
+        </div>
+        <div onclick="showCategoryProducts('home-kitchen')" style="padding: 20px; background: #1a1a1a; border-radius: 8px; text-align: center; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+          <div style="font-size: 30px; margin-bottom: 10px;">🏠</div>
+          <p style="font-weight: bold;">Home & Kitchen</p>
+        </div>
+        <div onclick="showCategoryProducts('sports')" style="padding: 20px; background: #1a1a1a; border-radius: 8px; text-align: center; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+          <div style="font-size: 30px; margin-bottom: 10px;">⚽</div>
+          <p style="font-weight: bold;">Sports</p>
+        </div>
+        <div onclick="showCategoryProducts('books')" style="padding: 20px; background: #1a1a1a; border-radius: 8px; text-align: center; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+          <div style="font-size: 30px; margin-bottom: 10px;">📚</div>
+          <p style="font-weight: bold;">Books</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Best Sellers Section -->
+    <div class="best-sellers" style="margin: 40px 0;">
+      <h3 style="text-align: center; font-size: 24px; margin-bottom: 30px;">Best Sellers This Month</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; padding: 0 20px;">
+        <div style="background: #1a1a1a; padding: 15px; border-radius: 8px; text-align: center;">
+          <img src="img/p1.jpg" alt="Product" style="width: 100%; height: 150px; object-fit: cover; border-radius: 5px; margin-bottom: 10px;">
+          <h4>Wireless Headphones</h4>
+          <p style="color: #e50914; font-weight: bold;">₹2,999</p>
+          <button onclick="addToCart('p1', 'Wireless Headphones', 2999, 'img/p1.jpg')" style="width: 100%; padding: 8px; background: #e50914; color: white; border: none; border-radius: 5px; cursor: pointer;">Add to Cart</button>
+        </div>
+        <div style="background: #1a1a1a; padding: 15px; border-radius: 8px; text-align: center;">
+          <img src="img/p2.jpg" alt="Product" style="width: 100%; height: 150px; object-fit: cover; border-radius: 5px; margin-bottom: 10px;">
+          <h4>Smart Watch</h4>
+          <p style="color: #e50914; font-weight: bold;">₹3,999</p>
+          <button onclick="addToCart('p2', 'Smart Watch', 3999, 'img/p2.jpg')" style="width: 100%; padding: 8px; background: #e50914; color: white; border: none; border-radius: 5px; cursor: pointer;">Add to Cart</button>
+        </div>
+        <div style="background: #1a1a1a; padding: 15px; border-radius: 8px; text-align: center;">
+          <img src="img/p3.jpg" alt="Product" style="width: 100%; height: 150px; object-fit: cover; border-radius: 5px; margin-bottom: 10px;">
+          <h4>Running Shoes</h4>
+          <p style="color: #e50914; font-weight: bold;">₹4,999</p>
+          <button onclick="addToCart('p3', 'Running Shoes', 4999, 'img/p3.jpg')" style="width: 100%; padding: 8px; background: #e50914; color: white; border: none; border-radius: 5px; cursor: pointer;">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Call to Action Section -->
+    <div style="background: linear-gradient(135deg, #e50914, #b70710); padding: 40px; border-radius: 10px; text-align: center; margin: 40px 20px; color: white;">
+      <h3 style="font-size: 28px; margin-bottom: 15px;">Special Offer Just for You!</h3>
+      <p style="font-size: 18px; margin-bottom: 20px;">Get up to 70% off on selected items. Limited time only!</p>
+      <button onclick="showSection('products')" style="padding: 12px 30px; background: white; color: #e50914; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer;">Shop Now</button>
     </div>
   </section>
   <!-- ================= MEN SECTION ================= -->
@@ -136,6 +203,16 @@
       <!-- Price Filter -->
       <label for="priceFilter">Max Price:</label>
       <input type="number" id="priceFilter" placeholder="Enter max price" oninput="filterProducts()">
+
+      <!-- Sort Filter -->
+      <label for="sort-products">Sort by:</label>
+      <select id="sort-products">
+        <option value="">Default</option>
+        <option value="low-high">Price: Low to High</option>
+        <option value="high-low">Price: High to Low</option>
+        <option value="name-asc">Name: A to Z</option>
+        <option value="name-desc">Name: Z to A</option>
+      </select>
     </div>
 
     <!-- Product Grid -->
