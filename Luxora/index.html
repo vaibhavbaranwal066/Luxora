@@ -8,11 +8,11 @@
 </head>
 <body>
   <!-- ================= WELCOME SCREEN ================= -->
-  <div id="welcome-screen">
-    <div class="welcome-text">
-      <h1>Welcome to Luxora</h1>
-      <p>Swipe through trends. Shop your favorites.</p>
-      <button onclick="skipWelcome()">Skip</button>
+  <div id="welcome-screen" style="position: fixed; width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; z-index: 2000; top: 0; left: 0;">
+    <div class="welcome-text" style="text-align: center; color: white;">
+      <h1 style="font-size: 48px; margin-bottom: 20px;">Welcome to Luxora</h1>
+      <p style="font-size: 20px; margin-bottom: 30px;">Swipe through trends. Shop your favorites.</p>
+      <button id="enter-btn" style="padding: 15px 40px; font-size: 18px; background: #e50914; color: white; border: none; border-radius: 5px; cursor: pointer;">Enter Store</button>
     </div>
   </div>
   <!-- ================= NAVIGATION ================= -->
@@ -56,10 +56,9 @@
     </div>
 
     <!-- User Auth Links -->
-    <div id="user-container">
-      <a id="nav-login" onclick="showSection('login')">Login</a>
-      <a id="nav-signup" onclick="showSection('signup')">Sign Up</a>
-      <a id="nav-profile" class="hidden" onclick="showSection('profile')">My Profile</a>
+    <div id="user-container" style="display: flex; gap: 15px; align-items: center;">
+      <a href="#" onclick="showSection('auth'); return false;">Login</a> | 
+      <a href="#" onclick="showSection('auth'); return false;">Sign Up</a>
     </div>
 
     <!-- Theme Toggle -->
@@ -73,18 +72,15 @@
   </section>
 
   <!-- ================= HOME SECTION ================= -->
-  <section id="home" class="page-section active">
+  <section id="home" class="page-section">
     <h2>Featured Collections</h2>
 
     <!-- Image Carousel -->
     <div class="carousel">
-      <div class="carousel-container">
-      </div>
       <button class="carousel-btn prev" onclick="prevSlide()">&#10094;</button>
-        <img src="img/adb1.jpg" alt="Banner 1">
-        <img src="img/adb2.jpg" alt="Banner 3">
-        <img src="img/adb3.jpg" alt="Banner 3">
-        
+      <img src="img/adb1.jpg" alt="Banner 1" style="display: block;">
+      <img src="img/adb2.jpg" alt="Banner 2" style="display: none;">
+      <img src="img/adb3.jpg" alt="Banner 3" style="display: none;">
       <button class="carousel-btn next" onclick="nextSlide()">&#10095;</button>
     </div>
   </section>
@@ -312,12 +308,9 @@
 
   <!-- ================= USER PROFILE SECTION ================= -->
   <section id="profile" class="page-section hidden">
-    <h2>My Profile</h2>
-    <div id="profile-info">
+    <div id="profile-container">
       <!-- User info dynamically loaded -->
     </div>
-    <button onclick="showSection('settings')">Go to Settings</button>
-    <button onclick="logoutUser()">Logout</button>
   </section>
 
   <!-- ================= SETTINGS SECTION ================= -->
